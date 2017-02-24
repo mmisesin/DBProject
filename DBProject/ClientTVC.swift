@@ -16,6 +16,14 @@ class ClientTVC: NSViewController, DBTable {
     
     var fields: [[String]]?
     
+    var selectedRow = 0{
+        willSet{
+            if let parent = self.parent as? TabBarViewController {
+                parent.selectedRow = newValue
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let p = PGConnection()
@@ -31,14 +39,19 @@ extension ClientTVC: NSTableViewDataSource {
 
 extension ClientTVC: NSTableViewDelegate {
     
+    func tableViewSelectionDidChange(_ notification: Notification) {
+        selectedRow = tableView.selectedRowIndexes.first!
+    }
+    
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
-        return 30
+        return 70
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         
         var image: NSImage?
         var text: String = ""
+        var phone = ""
         var cellIdentifier: String = ""
         
         // 1
@@ -47,6 +60,7 @@ extension ClientTVC: NSTableViewDelegate {
         }
         if tableColumn == tableView.tableColumns[0] {
             text = item[1]
+            phone = item[2]
             cellIdentifier = CellIdentifiers.NameCell
         } else if tableColumn == tableView.tableColumns[1] {
             text = item[0]
@@ -63,9 +77,9 @@ extension ClientTVC: NSTableViewDelegate {
         
         
         // 3
-        if let cell = tableView.make(withIdentifier: cellIdentifier, owner: nil) as? NSTableCellView {
-            cell.textField?.stringValue = text
-            cell.imageView?.image = nil
+        if let cell = tableView.make(withIdentifier: cellIdentifier, owner: nil) as? CustomCell {
+            cell.nameLabel.stringValue = text
+            cell.phoneLabel.stringValue = phone
             return cell
         }
         return nil

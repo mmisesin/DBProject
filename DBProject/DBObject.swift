@@ -13,6 +13,8 @@ protocol DBTable {
     var tableName: String {get set}
     
     var fields: [[String]]? {get set}
+    
+    var selectedRow: Int {get set}
 
 }
 
@@ -33,11 +35,18 @@ extension DBTable {
             returnValue.append([])
             for y in 0..<numFields {
                 if let value = result.getFieldString(tupleIndex: x, fieldIndex: y){
-                    returnValue[x].append(value)
+                    returnValue[x].append(suitableData(from: value))
                 }
             }
         }
         result.clear()
         return returnValue
+    }
+    
+    func suitableData(from string: String) -> String {
+        var result = string.replacingOccurrences(of: "(", with: "")
+        result = result.replacingOccurrences(of: ")", with: "")
+        result = result.replacingOccurrences(of: ",", with: " ")
+        return result
     }
 }

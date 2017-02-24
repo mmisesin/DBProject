@@ -8,8 +8,9 @@
 
 import Cocoa
 
-class BrokerCell: NSTableCellView {
+class CustomCell: NSTableCellView {
     
-    
-    
+    @IBOutlet weak var userPicture: NSImageView!
+    @IBOutlet weak var nameLabel: NSTextField!
+    @IBOutlet weak var phoneLabel: NSTextField!
 }
