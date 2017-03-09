@@ -1,18 +1,18 @@
 //
-//  TableViewController.swift
+//  CBContractTVC.swift
 //  DBProject
 //
-//  Created by Artem Misesin on 2/21/17.
+//  Created by Artem Misesin on 2/25/17.
 //  Copyright © 2017 Artem Misesin. All rights reserved.
 //
 
 import Cocoa
 
-class ClientTVC: NSViewController, DBTable {
+class CBContractTVC: NSViewController, DBTable {
 
     @IBOutlet weak var table: NSTableView!
     
-    var mainRequest = "select * from client";
+    var mainRequest: String = "SELECT c.id, c.money, c.brokerID, c.clientID, c.startDate, c.finishDate, b.name, i.name, b.photo, i.photo FROM ContractCB c INNER JOIN Broker b ON c.brokerID = b.brokerid INNER JOIN Client i ON c.clientID = i.clientID"
     
     var fields: [[String]]?
     
@@ -31,9 +31,9 @@ class ClientTVC: NSViewController, DBTable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Do view setup here.
         let p = PGConnection()
-        fields = fetchAllData(at: p)
-        self.view.wantsLayer = true
+        fields = fetchContractsInfo(at: p)
     }
     
     override func viewWillAppear() {
@@ -42,13 +42,13 @@ class ClientTVC: NSViewController, DBTable {
     }
 }
 
-extension ClientTVC: NSTableViewDataSource {
+extension CBContractTVC: NSTableViewDataSource {
     public func numberOfRows(in tableView: NSTableView) -> Int {
         return fields!.count
     }
 }
 
-extension ClientTVC: NSTableViewDelegate {
+extension CBContractTVC: NSTableViewDelegate {
     
     func tableViewSelectionDidChange(_ notification: Notification) {
         if let selectedIndex = table.selectedRowIndexes.first {
@@ -59,40 +59,34 @@ extension ClientTVC: NSTableViewDelegate {
             }
         }
     }
-    
-    func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
-        let rowView = NSTableRowView()
-        return rowView
-    }
-    
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         return 70
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+        
         var image: NSImage?
         var text: String = ""
         var phone = ""
         
         // 1
         guard let item = fields?[row] else {
-                return nil
+            return nil
         }
         if tableColumn == tableView.tableColumns[0] {
-            text = item[1]
-            phone = item[2]
-            image = NSImage(byReferencing:NSURL(string: item[6]) as! URL)
+            text = item[6]
+            phone = "Client: " + item[7]
+            image = NSImage(byReferencing:NSURL(string: item[9]) as! URL)
         }
-        
-        // 2
+
+        // 3
         
         table.selectionHighlightStyle = .none
         
-        // 3
         if let cell = tableView.make(withIdentifier: "name", owner: nil) as? CustomCell {
             cell.nameLabel.stringValue = text
-            cell.wantsLayer = true
             cell.phoneLabel.stringValue = phone
+            cell.wantsLayer = true
             cell.userPicture.image = image
             let separator = NSView(frame: NSRect(x: cell.bounds.minX, y: cell.bounds.minY + 1, width: cell.bounds.width, height: 1))
             separator.wantsLayer = true
@@ -103,3 +97,4 @@ extension ClientTVC: NSTableViewDelegate {
         return nil
     }
 }
+

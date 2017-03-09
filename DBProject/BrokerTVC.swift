@@ -10,25 +10,35 @@ import Cocoa
 
 class BrokerTVC: NSViewController, DBTable {
 
-    @IBOutlet weak var brokerTable: NSTableView!
+    @IBOutlet weak var table: NSTableView!
     
-    var tableName: String = "Broker"
+    var mainRequest = "select * from broker";
     
     var fields: [[String]]?
     
     var selectedRow = 0{
         willSet{
+            if selectedRow != newValue{
+                previousSelected = selectedRow
+            }
             if let parent = self.parent as? TabBarViewController {
                 parent.selectedRow = newValue
             }
         }
     }
     
+    var previousSelected: Int?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
         let p = PGConnection()
         fields = fetchAllData(at: p)
+    }
+    
+    override func viewWillAppear() {
+        table.rowView(atRow: selectedRow, makeIfNecessary: false)?.backgroundColor = .clear
+        table.deselectRow(selectedRow)
     }
 }
 
@@ -44,7 +54,13 @@ extension BrokerTVC: NSTableViewDataSource {
 extension BrokerTVC: NSTableViewDelegate {
     
     func tableViewSelectionDidChange(_ notification: Notification) {
-        selectedRow = brokerTable.selectedRowIndexes.first!
+        if let selectedIndex = table.selectedRowIndexes.first {
+            table.rowView(atRow: selectedIndex, makeIfNecessary: false)?.backgroundColor = NSColor(calibratedRed: 0.96, green: 0.97, blue: 0.98, alpha: 1)
+            selectedRow = selectedIndex
+            if let previous = previousSelected{
+                table.rowView(atRow: previous, makeIfNecessary: false)?.backgroundColor = .clear
+            }
+        }
     }
     
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
@@ -56,7 +72,6 @@ extension BrokerTVC: NSTableViewDelegate {
         var image: NSImage?
         var name: String = ""
         var phone = ""
-        var cellIdentifier: String = ""
         
         // 1
         
@@ -64,31 +79,23 @@ extension BrokerTVC: NSTableViewDelegate {
             return nil
         }
             if tableColumn == tableView.tableColumns[0] {
+                image = NSImage(byReferencing:NSURL(string: item[8]) as! URL)
                 name = item[1]
                 phone = item[2]
-                cellIdentifier = CellIdentifiers.NameCell
-            } else if tableColumn == tableView.tableColumns[1] {
-                name = item[0]
-                cellIdentifier = CellIdentifiers.IDCell
-            } else if tableColumn == tableView.tableColumns[2] {
-                name = item[2]
-                cellIdentifier = CellIdentifiers.PhoneCell
-            } else if tableColumn == tableView.tableColumns[3]{
-                name = item[3]
-                cellIdentifier = CellIdentifiers.ManagerCell
-            } else if tableColumn == tableView.tableColumns[4] {
-                name = item[4]
-                cellIdentifier = CellIdentifiers.MoneyCell
-            } else if tableColumn == tableView.tableColumns[5] {
-                name = item[5]
-                cellIdentifier = CellIdentifiers.DateCell
             }
         
+        table.selectionHighlightStyle = .none
+        
         // 3
-        if let cell = tableView.make(withIdentifier: cellIdentifier, owner: nil) as? CustomCell {
+        if let cell = tableView.make(withIdentifier: "name", owner: nil) as? CustomCell {
             cell.nameLabel.stringValue = name
             cell.phoneLabel.stringValue = phone
-            cell.imageView?.image = nil
+            cell.userPicture?.image = image
+            cell.wantsLayer = true
+            let separator = NSView(frame: NSRect(x: cell.bounds.minX, y: cell.bounds.minY + 1, width: cell.bounds.width, height: 1))
+            separator.wantsLayer = true
+            separator.layer?.backgroundColor = NSColor.lightGray.cgColor
+            cell.addSubview(separator)
             return cell
         }
         return nil

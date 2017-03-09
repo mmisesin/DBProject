@@ -1,18 +1,18 @@
 //
-//  TableViewController.swift
+//  ManagerTVC.swift
 //  DBProject
 //
-//  Created by Artem Misesin on 2/21/17.
+//  Created by Artem Misesin on 2/26/17.
 //  Copyright © 2017 Artem Misesin. All rights reserved.
 //
 
 import Cocoa
 
-class ClientTVC: NSViewController, DBTable {
-
+class ManagerTVC: NSViewController, DBTable {
+    
     @IBOutlet weak var table: NSTableView!
     
-    var mainRequest = "select * from client";
+    var mainRequest = "select * from manager";
     
     var fields: [[String]]?
     
@@ -31,9 +31,9 @@ class ClientTVC: NSViewController, DBTable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Do view setup here.
         let p = PGConnection()
         fields = fetchAllData(at: p)
-        self.view.wantsLayer = true
     }
     
     override func viewWillAppear() {
@@ -42,13 +42,16 @@ class ClientTVC: NSViewController, DBTable {
     }
 }
 
-extension ClientTVC: NSTableViewDataSource {
+extension ManagerTVC: NSTableViewDataSource {
     public func numberOfRows(in tableView: NSTableView) -> Int {
-        return fields!.count
+        if let count = fields?.count {
+            return count
+        }
+        return 0
     }
 }
 
-extension ClientTVC: NSTableViewDelegate {
+extension ManagerTVC: NSTableViewDelegate {
     
     func tableViewSelectionDidChange(_ notification: Notification) {
         if let selectedIndex = table.selectedRowIndexes.first {
@@ -60,40 +63,33 @@ extension ClientTVC: NSTableViewDelegate {
         }
     }
     
-    func tableView(_ tableView: NSTableView, rowViewForRow row: Int) -> NSTableRowView? {
-        let rowView = NSTableRowView()
-        return rowView
-    }
-    
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         return 70
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+        
         var image: NSImage?
-        var text: String = ""
+        var name: String = ""
         var phone = ""
         
-        // 1
         guard let item = fields?[row] else {
-                return nil
+            return nil
         }
         if tableColumn == tableView.tableColumns[0] {
-            text = item[1]
+            name = item[1]
             phone = item[2]
             image = NSImage(byReferencing:NSURL(string: item[6]) as! URL)
         }
-        
-        // 2
         
         table.selectionHighlightStyle = .none
         
         // 3
         if let cell = tableView.make(withIdentifier: "name", owner: nil) as? CustomCell {
-            cell.nameLabel.stringValue = text
-            cell.wantsLayer = true
+            cell.nameLabel.stringValue = name
             cell.phoneLabel.stringValue = phone
-            cell.userPicture.image = image
+            cell.userPicture?.image = image
+            cell.wantsLayer = true
             let separator = NSView(frame: NSRect(x: cell.bounds.minX, y: cell.bounds.minY + 1, width: cell.bounds.width, height: 1))
             separator.wantsLayer = true
             separator.layer?.backgroundColor = NSColor.lightGray.cgColor

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C6039B851E70441900F9C18F /* ContractInfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6039B841E70441900F9C18F /* ContractInfoVC.swift */; };
+		C6039B871E71351F00F9C18F /* Presenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6039B861E71351F00F9C18F /* Presenting.swift */; };
+		C6039B891E718FF100F9C18F /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6039B881E718FF100F9C18F /* extensions.swift */; };
 		C603D8B11E5CA2B500E8330D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C603D8B01E5CA2B500E8330D /* AppDelegate.swift */; };
 		C603D8B31E5CA2B500E8330D /* SplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C603D8B21E5CA2B500E8330D /* SplitViewController.swift */; };
 		C603D8B51E5CA2B500E8330D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C603D8B41E5CA2B500E8330D /* Assets.xcassets */; };
@@ -16,15 +19,25 @@
 		C603D8CC1E5CBE9500E8330D /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C603D8CA1E5CBE9500E8330D /* ContainerViewController.swift */; };
 		C603D8CF1E5CCCFD00E8330D /* ClientTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C603D8CE1E5CCCFD00E8330D /* ClientTVC.swift */; };
 		C603D8D21E5DE32A00E8330D /* BrokerTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C603D8D01E5DE32A00E8330D /* BrokerTVC.swift */; };
-		C603D8D51E5E1EA400E8330D /* DBObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = C603D8D41E5E1EA400E8330D /* DBObject.swift */; };
+		C603D8D51E5E1EA400E8330D /* DBTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C603D8D41E5E1EA400E8330D /* DBTable.swift */; };
+		C614090E1E649E080019163C /* BIContractTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C614090D1E649E080019163C /* BIContractTVC.swift */; };
+		C61409101E6604D10019163C /* CustomSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C614090F1E6604D10019163C /* CustomSegue.swift */; };
+		C61409121E6605620019163C /* Animator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61409111E6605620019163C /* Animator.swift */; };
+		C61409141E6609770019163C /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61409131E6609770019163C /* LoginVC.swift */; };
+		C61409171E6616BE0019163C /* TypePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61409151E6616BE0019163C /* TypePicker.swift */; };
+		C673E0AE1E61E81300D1D2C4 /* CBContractTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C673E0AD1E61E81300D1D2C4 /* CBContractTVC.swift */; };
 		C68FF4D41E5F2BAB00A4308B /* Structs.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68FF4D31E5F2BAB00A4308B /* Structs.swift */; };
 		C68FF4D71E5F2D7C00A4308B /* BrokerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68FF4D61E5F2D7C00A4308B /* BrokerCell.swift */; };
 		C68FF4D91E5F462A00A4308B /* InfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68FF4D81E5F462A00A4308B /* InfoVC.swift */; };
 		C68FF4DB1E5F6BFA00A4308B /* TabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68FF4DA1E5F6BFA00A4308B /* TabBarViewController.swift */; };
 		C68FF4DD1E5F7EA800A4308B /* IssuerTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C68FF4DC1E5F7EA800A4308B /* IssuerTVC.swift */; };
+		C6D2CFD91E623B1000BC0A33 /* ManagerTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D2CFD71E623B1000BC0A33 /* ManagerTVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C6039B841E70441900F9C18F /* ContractInfoVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContractInfoVC.swift; sourceTree = "<group>"; };
+		C6039B861E71351F00F9C18F /* Presenting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Presenting.swift; sourceTree = "<group>"; };
+		C6039B881E718FF100F9C18F /* extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
 		C603D8AD1E5CA2B500E8330D /* DBProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DBProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C603D8B01E5CA2B500E8330D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C603D8B21E5CA2B500E8330D /* SplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewController.swift; sourceTree = "<group>"; };
@@ -37,12 +50,19 @@
 		C603D8CA1E5CBE9500E8330D /* ContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
 		C603D8CE1E5CCCFD00E8330D /* ClientTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientTVC.swift; sourceTree = "<group>"; };
 		C603D8D01E5DE32A00E8330D /* BrokerTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrokerTVC.swift; sourceTree = "<group>"; };
-		C603D8D41E5E1EA400E8330D /* DBObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBObject.swift; sourceTree = "<group>"; };
+		C603D8D41E5E1EA400E8330D /* DBTable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBTable.swift; sourceTree = "<group>"; };
+		C614090D1E649E080019163C /* BIContractTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BIContractTVC.swift; sourceTree = "<group>"; };
+		C614090F1E6604D10019163C /* CustomSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomSegue.swift; sourceTree = "<group>"; };
+		C61409111E6605620019163C /* Animator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Animator.swift; sourceTree = "<group>"; };
+		C61409131E6609770019163C /* LoginVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
+		C61409151E6616BE0019163C /* TypePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypePicker.swift; sourceTree = "<group>"; };
+		C673E0AD1E61E81300D1D2C4 /* CBContractTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBContractTVC.swift; sourceTree = "<group>"; };
 		C68FF4D31E5F2BAB00A4308B /* Structs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Structs.swift; sourceTree = "<group>"; };
 		C68FF4D61E5F2D7C00A4308B /* BrokerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrokerCell.swift; sourceTree = "<group>"; };
 		C68FF4D81E5F462A00A4308B /* InfoVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoVC.swift; sourceTree = "<group>"; };
 		C68FF4DA1E5F6BFA00A4308B /* TabBarViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarViewController.swift; sourceTree = "<group>"; };
 		C68FF4DC1E5F7EA800A4308B /* IssuerTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IssuerTVC.swift; sourceTree = "<group>"; };
+		C6D2CFD71E623B1000BC0A33 /* ManagerTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagerTVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,13 +99,21 @@
 			isa = PBXGroup;
 			children = (
 				C68FF4D51E5F2C9500A4308B /* Supporting Files */,
-				C603D8D41E5E1EA400E8330D /* DBObject.swift */,
+				C603D8D41E5E1EA400E8330D /* DBTable.swift */,
+				C6039B881E718FF100F9C18F /* extensions.swift */,
 				C603D8B61E5CA2B500E8330D /* Main.storyboard */,
+				C61409151E6616BE0019163C /* TypePicker.swift */,
+				C6039B861E71351F00F9C18F /* Presenting.swift */,
 				C68FF4D81E5F462A00A4308B /* InfoVC.swift */,
+				C6039B841E70441900F9C18F /* ContractInfoVC.swift */,
 				C603D8D01E5DE32A00E8330D /* BrokerTVC.swift */,
 				C68FF4DC1E5F7EA800A4308B /* IssuerTVC.swift */,
+				C6D2CFD71E623B1000BC0A33 /* ManagerTVC.swift */,
 				C603D8CE1E5CCCFD00E8330D /* ClientTVC.swift */,
+				C61409131E6609770019163C /* LoginVC.swift */,
 				C603D8B21E5CA2B500E8330D /* SplitViewController.swift */,
+				C673E0AD1E61E81300D1D2C4 /* CBContractTVC.swift */,
+				C614090D1E649E080019163C /* BIContractTVC.swift */,
 				C603D8CA1E5CBE9500E8330D /* ContainerViewController.swift */,
 				C68FF4DA1E5F6BFA00A4308B /* TabBarViewController.swift */,
 				C68FF4D61E5F2D7C00A4308B /* BrokerCell.swift */,
@@ -107,6 +135,8 @@
 				C68FF4D31E5F2BAB00A4308B /* Structs.swift */,
 				C603D8C21E5CA3BE00E8330D /* PostgreSQL.swift */,
 				C603D8B01E5CA2B500E8330D /* AppDelegate.swift */,
+				C614090F1E6604D10019163C /* CustomSegue.swift */,
+				C61409111E6605620019163C /* Animator.swift */,
 				C603D8B41E5CA2B500E8330D /* Assets.xcassets */,
 				C603D8B91E5CA2B500E8330D /* Info.plist */,
 			);
@@ -185,18 +215,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C61409101E6604D10019163C /* CustomSegue.swift in Sources */,
 				C68FF4D41E5F2BAB00A4308B /* Structs.swift in Sources */,
+				C6039B851E70441900F9C18F /* ContractInfoVC.swift in Sources */,
+				C6039B891E718FF100F9C18F /* extensions.swift in Sources */,
 				C603D8B31E5CA2B500E8330D /* SplitViewController.swift in Sources */,
 				C68FF4DB1E5F6BFA00A4308B /* TabBarViewController.swift in Sources */,
 				C603D8B11E5CA2B500E8330D /* AppDelegate.swift in Sources */,
+				C61409171E6616BE0019163C /* TypePicker.swift in Sources */,
 				C68FF4D71E5F2D7C00A4308B /* BrokerCell.swift in Sources */,
 				C603D8D21E5DE32A00E8330D /* BrokerTVC.swift in Sources */,
+				C673E0AE1E61E81300D1D2C4 /* CBContractTVC.swift in Sources */,
 				C603D8CC1E5CBE9500E8330D /* ContainerViewController.swift in Sources */,
 				C603D8CF1E5CCCFD00E8330D /* ClientTVC.swift in Sources */,
-				C603D8D51E5E1EA400E8330D /* DBObject.swift in Sources */,
+				C614090E1E649E080019163C /* BIContractTVC.swift in Sources */,
+				C6039B871E71351F00F9C18F /* Presenting.swift in Sources */,
+				C603D8D51E5E1EA400E8330D /* DBTable.swift in Sources */,
 				C68FF4D91E5F462A00A4308B /* InfoVC.swift in Sources */,
+				C61409121E6605620019163C /* Animator.swift in Sources */,
+				C61409141E6609770019163C /* LoginVC.swift in Sources */,
 				C68FF4DD1E5F7EA800A4308B /* IssuerTVC.swift in Sources */,
 				C603D8C31E5CA3BE00E8330D /* PostgreSQL.swift in Sources */,
+				C6D2CFD91E623B1000BC0A33 /* ManagerTVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
