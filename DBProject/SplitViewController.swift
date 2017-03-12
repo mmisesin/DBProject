@@ -18,7 +18,11 @@ enum Tables: String {
 }
 
 enum Roles: String {
-    case client, broker, issuer, manager, admin
+    case client = "Client"
+    case broker = "Broker"
+    case issuer = "Issuer"
+    case manager = "Manager"
+    case admin = "Admin"
 }
 
 class SplitViewController: NSSplitViewController {
@@ -90,7 +94,7 @@ class SplitViewController: NSSplitViewController {
         }
     }
 
-    func updateView() {
+    private func updateView() {
         let item = NSSplitViewItem(viewController: infoVC!)
         let cItem = NSSplitViewItem(viewController: contractInfo!)
         switch activeTab{

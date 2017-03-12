@@ -8,22 +8,6 @@
 
 import Cocoa
 
-extension NSStoryboardSegue {
-    
-    var source: NSViewController? {
-        
-        return self.sourceController as? NSViewController
-        
-    }
-    
-    var destination: NSViewController? {
-        
-        return self.destinationController as? NSViewController
-        
-    }
-
-}
-
 class LoginVC: NSViewController {
 
     override func viewDidLoad() {
