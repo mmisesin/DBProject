@@ -9,34 +9,16 @@
 import Cocoa
 
 class TypePicker: NSViewController {
-
-    var type: String = ""
-    
-    @IBAction func typeButton(_ sender: NSButton) {
-        type = sender.title
-        createController()
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
     }
     
-    func createController(){
-        let nextVC = NSViewController()
-        switch type{
-        case "Costumer":
-            var title = NSTextField(labelWithString: "Signing Up")
-            title.frame = CGRect(x: self.view.bounds.midX, y: 20, width: 0, height: 0)
-            title.sizeToFit()
-            nextVC.view.addSubview(title)
-            self.presentViewControllerAsModalWindow(nextVC)
-            dismissViewController(self)
-//        case "Broker":
-//            
-//        case "Issuer":
-        default: break
+    override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
+        if let _ = segue.destination as? DataEnterVC{
+            let button = sender as? NSButton
+            SingleObject.shared.type = (button?.title).map { Roles(rawValue: $0) }!!
         }
     }
-    
 }
