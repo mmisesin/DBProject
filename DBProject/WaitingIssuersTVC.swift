@@ -1,26 +1,28 @@
 //
-//  BIContractTVC.swift
+//  IssuerTVC.swift
 //  DBProject
 //
-//  Created by Artem Misesin on 2/27/17.
+//  Created by Artem Misesin on 2/23/17.
 //  Copyright © 2017 Artem Misesin. All rights reserved.
 //
 
 import Cocoa
 
-class BIContractTVC: NSViewController, DBTable {
-
+class WaitingIssuerTVC: NSViewController, DBTable {
+    
+    //outlet here
+    
     @IBOutlet weak var table: NSTableView!
     
-    var mainRequest: String = "select c.id, ammount, c.brokerID, c.issuerID, c.date, b.name, i.name, b.photo, i.photo, i.price FROM contractbi c inner join broker b on c.brokerid = b.brokerid inner join issuer i on c.issuerID = i.issuerID"
-    
-    var fields: [[String]]?
+    var mainRequest = "select * from issuer where approved = false";
     
     var reloadNeeded = false
     
+    var dbHandler = DBEditor()
+    
     var connection: PGConnection?
     
-    var dbHandler = DBEditor()
+    var fields: [[String]]?
     
     var selectedRow = 0{
         willSet{
@@ -39,7 +41,7 @@ class BIContractTVC: NSViewController, DBTable {
         super.viewDidLoad()
         // Do view setup here.
         connection = PGConnection()
-        fields = fetchContractsInfo(at: connection!)
+        fields = fetchAllData(at: connection!)
     }
     
     override func viewWillAppear() {
@@ -51,16 +53,30 @@ class BIContractTVC: NSViewController, DBTable {
             reloadNeeded = false
         }
     }
-    
 }
 
-extension BIContractTVC: NSTableViewDataSource {
+extension WaitingIssuerTVC: NSTableViewDataSource {
     public func numberOfRows(in tableView: NSTableView) -> Int {
-        return fields!.count
+        if let count = fields?.count {
+            return count
+        }
+        return 0
     }
 }
 
-extension BIContractTVC: NSTableViewDelegate {
+extension WaitingIssuerTVC: NSTableViewDelegate {
+    
+    func tableView(_ tableView: NSTableView, rowActionsForRow row: Int, edge: NSTableRowActionEdge) -> [NSTableViewRowAction] {
+        let delete = NSTableViewRowAction(style: .destructive, title: "Delete") { action, index in
+            print(self.dbHandler.delete(id: self.fields![row][0], of: .brokers))
+            self.fields = self.fetchAllData(at: self.connection!)
+            tableView.reloadData()
+        }
+        let contract = NSTableViewRowAction(style: .regular, title: "Contract") { action, index in
+            print("contract")
+        }
+        return [contract, delete]
+    }
     
     func tableViewSelectionDidChange(_ notification: Notification) {
         if let selectedIndex = table.selectedRowIndexes.first {
@@ -78,28 +94,24 @@ extension BIContractTVC: NSTableViewDelegate {
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         
-        //var image: NSImage?
-        var text: String = ""
+        var name: String = ""
         var phone = ""
-        var image: NSImage?
         
-        // 1
         guard let item = fields?[row] else {
             return nil
         }
         if tableColumn == tableView.tableColumns[0] {
-            text = item[5]
-            phone = "Issuer: " + item[6]
-            image = NSImage(byReferencing: URL(string: item[8])!)
+            name = item[1]
+            phone = item[4]
         }
         
         table.selectionHighlightStyle = .none
         
         // 3
         if let cell = tableView.make(withIdentifier: "name", owner: nil) as? CustomCell {
-            cell.nameLabel.stringValue = text
+            cell.nameLabel.stringValue = name
             cell.phoneLabel.stringValue = phone
-            cell.userPicture.image = image
+            cell.userPicture?.downloadedFrom(link: item[9])
             cell.wantsLayer = true
             let separator = NSView(frame: NSRect(x: cell.bounds.minX, y: cell.bounds.minY + 1, width: cell.bounds.width, height: 1))
             separator.wantsLayer = true

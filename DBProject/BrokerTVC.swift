@@ -9,12 +9,18 @@
 import Cocoa
 
 class BrokerTVC: NSViewController, DBTable {
-
+    
     @IBOutlet weak var table: NSTableView!
     
-    var mainRequest = "select * from broker";
+    var mainRequest = "select * from broker where approved = true";
     
     var fields: [[String]]?
+    
+    var reloadNeeded = false
+    
+    var dbHandler = DBEditor()
+    
+    var connection: PGConnection?
     
     var selectedRow = 0{
         willSet{
@@ -32,13 +38,18 @@ class BrokerTVC: NSViewController, DBTable {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
-        let p = PGConnection()
-        fields = fetchAllData(at: p)
+        connection = PGConnection()
+        fields = fetchAllData(at: connection!)
     }
     
     override func viewWillAppear() {
         table.rowView(atRow: selectedRow, makeIfNecessary: false)?.backgroundColor = .clear
         table.deselectRow(selectedRow)
+        if reloadNeeded{
+            table.reloadData()
+            fields = fetchAllData(at: connection!)
+            reloadNeeded = false
+        }
     }
 }
 
@@ -63,13 +74,24 @@ extension BrokerTVC: NSTableViewDelegate {
         }
     }
     
+    func tableView(_ tableView: NSTableView, rowActionsForRow row: Int, edge: NSTableRowActionEdge) -> [NSTableViewRowAction] {
+        let delete = NSTableViewRowAction(style: .destructive, title: "Delete") { action, index in
+            print(self.dbHandler.delete(id: self.fields![row][0], of: .brokers))
+            self.fields = self.fetchAllData(at: self.connection!)
+            tableView.reloadData()
+        }
+        let contract = NSTableViewRowAction(style: .regular, title: "Contract") { action, index in
+            print("contract")
+        }
+        return [contract, delete]
+    }
+    
     func tableView(_ tableView: NSTableView, heightOfRow row: Int) -> CGFloat {
         return 70
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         
-        var image: NSImage?
         var name: String = ""
         var phone = ""
         
@@ -79,7 +101,6 @@ extension BrokerTVC: NSTableViewDelegate {
             return nil
         }
             if tableColumn == tableView.tableColumns[0] {
-                image = NSImage(byReferencing:NSURL(string: item[8]) as! URL)
                 name = item[1]
                 phone = item[2]
             }
@@ -90,7 +111,7 @@ extension BrokerTVC: NSTableViewDelegate {
         if let cell = tableView.make(withIdentifier: "name", owner: nil) as? CustomCell {
             cell.nameLabel.stringValue = name
             cell.phoneLabel.stringValue = phone
-            cell.userPicture?.image = image
+            cell.userPicture?.downloadedFrom(link: item[8])
             cell.wantsLayer = true
             let separator = NSView(frame: NSRect(x: cell.bounds.minX, y: cell.bounds.minY + 1, width: cell.bounds.width, height: 1))
             separator.wantsLayer = true

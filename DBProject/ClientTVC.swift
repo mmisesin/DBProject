@@ -16,6 +16,12 @@ class ClientTVC: NSViewController, DBTable {
     
     var fields: [[String]]?
     
+    var dbHandler = DBEditor()
+    
+    var connection: PGConnection?
+    
+    var reloadNeeded = false
+    
     var selectedRow = 0{
         willSet{
             if selectedRow != newValue{
@@ -31,14 +37,19 @@ class ClientTVC: NSViewController, DBTable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let p = PGConnection()
-        fields = fetchAllData(at: p)
+        connection = PGConnection()
+        fields = fetchAllData(at: connection!)
         self.view.wantsLayer = true
     }
     
     override func viewWillAppear() {
         table.rowView(atRow: selectedRow, makeIfNecessary: false)?.backgroundColor = .clear
         table.deselectRow(selectedRow)
+        if reloadNeeded{
+            fields = fetchAllData(at: connection!)
+            table.reloadData()
+            reloadNeeded = false
+        }
     }
 }
 
@@ -49,6 +60,18 @@ extension ClientTVC: NSTableViewDataSource {
 }
 
 extension ClientTVC: NSTableViewDelegate {
+    
+    func tableView(_ tableView: NSTableView, rowActionsForRow row: Int, edge: NSTableRowActionEdge) -> [NSTableViewRowAction] {
+        let delete = NSTableViewRowAction(style: .destructive, title: "Delete") { action, index in
+            print(self.dbHandler.delete(id: self.fields![row][0], of: .brokers))
+            self.fields = self.fetchAllData(at: self.connection!)
+            tableView.reloadData()
+        }
+        let contract = NSTableViewRowAction(style: .regular, title: "Contract") { action, index in
+            print("contract")
+        }
+        return [contract, delete]
+    }
     
     func tableViewSelectionDidChange(_ notification: Notification) {
         if let selectedIndex = table.selectedRowIndexes.first {
@@ -70,7 +93,7 @@ extension ClientTVC: NSTableViewDelegate {
     }
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        var image: NSImage?
+        
         var text: String = ""
         var phone = ""
         
@@ -81,7 +104,6 @@ extension ClientTVC: NSTableViewDelegate {
         if tableColumn == tableView.tableColumns[0] {
             text = item[1]
             phone = item[2]
-            image = NSImage(byReferencing:NSURL(string: item[6]) as! URL)
         }
         
         // 2
@@ -93,7 +115,7 @@ extension ClientTVC: NSTableViewDelegate {
             cell.nameLabel.stringValue = text
             cell.wantsLayer = true
             cell.phoneLabel.stringValue = phone
-            cell.userPicture.image = image
+            cell.userPicture?.downloadedFrom(link: item[6])
             let separator = NSView(frame: NSRect(x: cell.bounds.minX, y: cell.bounds.minY + 1, width: cell.bounds.width, height: 1))
             separator.wantsLayer = true
             separator.layer?.backgroundColor = NSColor.lightGray.cgColor

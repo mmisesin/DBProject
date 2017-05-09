@@ -19,16 +19,103 @@ class InfoVC: NSViewController, Presenting {
     @IBOutlet weak var sixthLabel: NSTextField!
     @IBOutlet weak var seventhLabel: NSTextField!
     @IBOutlet weak var eightLabel: NSTextField!
+    @IBOutlet weak var firstButton: NSButton!
+    @IBOutlet weak var secondButton: NSButton!
     
-    var presentedObject = Tables.clients
+    var presentedObject = Tables.none
+    
+    var dbhandler = DBEditor()
     
     var noneSelected = true
     
     var infoValues: [String] = [] {
-        didSet {
-            reloadInfo(with: infoValues)
+        willSet {
+            reloadInfo(with: newValue)
         }
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        presentedObject = (parent as! SplitViewController).activeTab
+        firstButton.isHidden = true
+        secondButton.isHidden = true
+    }
+    
+    @IBAction func firstButtonAction(_ sender: NSButton) {
+        let tabParent = self.parent?.childViewControllers[0] as! NSTabViewController
+        switch presentedObject {
+        case .brokers, .issuers:
+            if dbhandler.hold(id: infoValues[0], of: presentedObject) == ""{
+                if let table = tabParent.childViewControllers[tabParent.selectedTabViewItemIndex] as? BrokerTVC{
+                    table.fields?.remove(at: table.selectedRow)
+                    table.table.reloadData()
+                } else if let table = tabParent.childViewControllers[tabParent.selectedTabViewItemIndex] as? IssuerTVC{
+                    table.fields?.remove(at: table.selectedRow)
+                    table.table.reloadData()
+                    
+                }
+                for table in (self.parent?.childViewControllers[0].childViewControllers)!{
+                    if var temp = table as? DBTable{
+                        temp.reloadNeeded = true
+                    }
+                }
+            }
+        case .waitingIssuers, .waitingBrokers:
+            let string = dbhandler.approve(id: infoValues[0], of: presentedObject)
+            print(string)
+            if string == ""{
+                if let table = tabParent.childViewControllers[tabParent.selectedTabViewItemIndex] as? WaitingIssuerTVC{
+                    table.fields?.remove(at: table.selectedRow)
+                    table.table.reloadData()
+                } else if let table = tabParent.childViewControllers[tabParent.selectedTabViewItemIndex] as? WaitingBrokerTVC{
+                    table.fields?.remove(at: table.selectedRow)
+                    table.table.reloadData()
+                    
+                }
+                for table in (self.parent?.childViewControllers[0].childViewControllers)!{
+                    if var temp = table as? DBTable{
+                        temp.reloadNeeded = true
+                    }
+                }
+            }
+            //case .managers:
+            
+        default:
+            break
+        }
+        print(infoValues[0])
+    }
+    
+    @IBAction func secondButtonAction(_ sender: NSButton) {
+        let tabParent = self.parent?.childViewControllers[0] as! NSTabViewController
+        if dbhandler.delete(id: infoValues[0], of: presentedObject) == ""{
+            if let table = tabParent.childViewControllers[tabParent.selectedTabViewItemIndex]  as? BrokerTVC{
+                table.fields?.remove(at: table.selectedRow)
+                table.table.reloadData()
+            } else if let table = tabParent.childViewControllers[tabParent.selectedTabViewItemIndex]  as? IssuerTVC{
+                table.fields?.remove(at: table.selectedRow)
+                table.table.reloadData()
+            } else if let table = tabParent.childViewControllers[tabParent.selectedTabViewItemIndex]  as? ClientTVC{
+                table.fields?.remove(at: table.selectedRow)
+                table.table.reloadData()
+            }else if let table = tabParent.childViewControllers[tabParent.selectedTabViewItemIndex]  as? ManagerTVC{
+                table.fields?.remove(at: table.selectedRow)
+                table.table.reloadData()
+            }else if let table = tabParent.childViewControllers[tabParent.selectedTabViewItemIndex]  as? WaitingBrokerTVC{
+                table.fields?.remove(at: table.selectedRow)
+                table.table.reloadData()
+            }else if let table = tabParent.childViewControllers[tabParent.selectedTabViewItemIndex]  as? WaitingIssuerTVC{
+                table.fields?.remove(at: table.selectedRow)
+                table.table.reloadData()
+            }
+            for table in (self.parent?.childViewControllers[0].childViewControllers)!{
+                if var temp = table as? DBTable{
+                    temp.reloadNeeded = true
+                }
+            }
+        }
+    }
+    
     
     func reloadInfo(with data: [String]){
         if noneSelected {
@@ -42,9 +129,11 @@ class InfoVC: NSViewController, Presenting {
             seventhLabel.stringValue = ""
             eightLabel.stringValue = ""
         } else {
+            firstButton.isHidden = false
+            secondButton.isHidden = false
             switch presentedObject {
             case .clients:
-                mainImage.image = NSImage(byReferencing:NSURL(string: data[6]) as! URL)
+                mainImage.downloadedFrom(link: data[6])
                 firstLabel?.stringValue = data[1]
                 secondLabel?.stringValue = "ID: \(data[0])"
                 thirdLabel?.stringValue = "Phone: \(data[2])"
@@ -53,18 +142,18 @@ class InfoVC: NSViewController, Presenting {
                 sixthLabel?.stringValue = ""
                 seventhLabel?.stringValue = ""
                 eightLabel?.stringValue = ""
-            case .issuers:
-                mainImage.image = NSImage(byReferencing:NSURL(string: data[9]) as! URL)
+            case .issuers, .waitingIssuers:
+                mainImage.downloadedFrom(link: data[9])
                 firstLabel?.stringValue = data[1]
-                secondLabel?.stringValue = "ID: \(data[0])"
+                secondLabel?.stringValue = "ID: 00000\(data[0])"
                 thirdLabel?.stringValue = "Phone: \(data[4])"
                 fourthLabel?.stringValue = "E-mail: \(data[5])"
                 sixthLabel?.stringValue = "$" + data[2] + "\n" + "Capitalization"
                 fifthLabel?.stringValue = "$" + data[3] + "\n" + "Stock price"
                 seventhLabel?.stringValue = data[10]
                 eightLabel?.stringValue = "Created: " + data[7]
-            case .brokers:
-                mainImage.image = NSImage(byReferencing:NSURL(string: data[8]) as! URL)
+            case .brokers, .waitingBrokers:
+                mainImage.downloadedFrom(link: data[8])
                 firstLabel?.stringValue = data[1]
                 secondLabel?.stringValue = "ID: \(data[0])"
                 thirdLabel?.stringValue = "Phone: \(data[2])"
@@ -74,8 +163,7 @@ class InfoVC: NSViewController, Presenting {
                 seventhLabel?.stringValue = data[9]
                 eightLabel?.stringValue = "Started working: " + data[7]
             case .managers:
-                mainImage.image = NSImage(byReferencing:NSURL(string: data[6]) as! URL)
-                mainImage.image = NSImage(contentsOf: URL(string: data[6])!)
+                mainImage.downloadedFrom(link: data[6])
                 firstLabel?.stringValue = data[1]
                 secondLabel?.stringValue = "ID: \(data[0])"
                 thirdLabel?.stringValue = "Phone: \(data[2])"
@@ -87,8 +175,12 @@ class InfoVC: NSViewController, Presenting {
             default:
                 break
             }
-            if mainImage == nil {
-                mainImage.image = NSImage(contentsOfFile: "NSUserGuest")
+            if presentedObject == .waitingBrokers || presentedObject == .waitingIssuers {
+                firstButton.title = "Approve"
+                secondButton.title = "Disapprove"
+            } else if (presentedObject == .brokers || presentedObject == .issuers) && (LoggedUser.shared.type == .manager || LoggedUser.shared.type == .admin){
+                firstButton.title = "Put on hold"
+                secondButton.title = "Delete"
             }
         }
     }

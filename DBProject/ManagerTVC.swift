@@ -16,6 +16,12 @@ class ManagerTVC: NSViewController, DBTable {
     
     var fields: [[String]]?
     
+    var dbHandler = DBEditor()
+    
+    var connection: PGConnection?
+    
+    var reloadNeeded = false
+    
     var selectedRow = 0{
         willSet{
             if selectedRow != newValue{
@@ -32,12 +38,17 @@ class ManagerTVC: NSViewController, DBTable {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
-        let p = PGConnection()
-        fields = fetchAllData(at: p)
+        connection = PGConnection()
+        fields = fetchAllData(at: connection!)
     }
     
     override func viewWillAppear() {
         table.rowView(atRow: selectedRow, makeIfNecessary: false)?.backgroundColor = .clear
+        if reloadNeeded{
+            fields = fetchAllData(at: connection!)
+            table.reloadData()
+            reloadNeeded = false
+        }
         table.deselectRow(selectedRow)
     }
 }
@@ -69,7 +80,6 @@ extension ManagerTVC: NSTableViewDelegate {
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         
-        var image: NSImage?
         var name: String = ""
         var phone = ""
         
@@ -79,7 +89,6 @@ extension ManagerTVC: NSTableViewDelegate {
         if tableColumn == tableView.tableColumns[0] {
             name = item[1]
             phone = item[2]
-            image = NSImage(byReferencing:NSURL(string: item[6]) as! URL)
         }
         
         table.selectionHighlightStyle = .none
@@ -88,7 +97,7 @@ extension ManagerTVC: NSTableViewDelegate {
         if let cell = tableView.make(withIdentifier: "name", owner: nil) as? CustomCell {
             cell.nameLabel.stringValue = name
             cell.phoneLabel.stringValue = phone
-            cell.userPicture?.image = image
+            cell.userPicture?.downloadedFrom(link: item[6])
             cell.wantsLayer = true
             let separator = NSView(frame: NSRect(x: cell.bounds.minX, y: cell.bounds.minY + 1, width: cell.bounds.width, height: 1))
             separator.wantsLayer = true

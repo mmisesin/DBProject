@@ -16,6 +16,12 @@ class CBContractTVC: NSViewController, DBTable {
     
     var fields: [[String]]?
     
+    var dbHandler = DBEditor()
+    
+    var connection: PGConnection?
+    
+    var reloadNeeded = false
+    
     var selectedRow = 0{
         willSet{
             if selectedRow != newValue{
@@ -32,13 +38,18 @@ class CBContractTVC: NSViewController, DBTable {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
-        let p = PGConnection()
-        fields = fetchContractsInfo(at: p)
+        connection = PGConnection()
+        fields = fetchContractsInfo(at: connection!)
     }
     
     override func viewWillAppear() {
         table.rowView(atRow: selectedRow, makeIfNecessary: false)?.backgroundColor = .clear
         table.deselectRow(selectedRow)
+        if reloadNeeded{
+            fields = fetchAllData(at: connection!)
+            table.reloadData()
+            reloadNeeded = false
+        }
     }
 }
 
@@ -65,7 +76,6 @@ extension CBContractTVC: NSTableViewDelegate {
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         
-        var image: NSImage?
         var text: String = ""
         var phone = ""
         
@@ -76,7 +86,6 @@ extension CBContractTVC: NSTableViewDelegate {
         if tableColumn == tableView.tableColumns[0] {
             text = item[6]
             phone = "Client: " + item[7]
-            image = NSImage(byReferencing:NSURL(string: item[9]) as! URL)
         }
 
         // 3
@@ -87,7 +96,7 @@ extension CBContractTVC: NSTableViewDelegate {
             cell.nameLabel.stringValue = text
             cell.phoneLabel.stringValue = phone
             cell.wantsLayer = true
-            cell.userPicture.image = image
+            cell.userPicture?.downloadedFrom(link: item[9])
             let separator = NSView(frame: NSRect(x: cell.bounds.minX, y: cell.bounds.minY + 1, width: cell.bounds.width, height: 1))
             separator.wantsLayer = true
             separator.layer?.backgroundColor = NSColor.lightGray.cgColor

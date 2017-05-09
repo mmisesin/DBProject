@@ -17,6 +17,12 @@ protocol DBTable {
     var selectedRow: Int {get set}
     
     var previousSelected: Int? {get set}
+    
+    var reloadNeeded: Bool {get set}
+    
+    var dbHandler: DBEditor {get set}
+    
+    var connection: PGConnection? {get set}
 
 }
 
@@ -36,7 +42,6 @@ extension DBTable {
             catch {print("Error reading file")}
         }
         _ = p.connectdb(connectionString)
-
         let statement = mainRequest
         let result = p.exec(statement: statement)
         let numFields = result.numFields()
@@ -60,9 +65,7 @@ extension DBTable {
         let file = "connectionString" //this is the file. we will write to and read from it
         var connectionString = ""
         if let dir = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first {
-            
             let path = dir.appendingPathComponent(file)
-
             //reading
             do {
                 connectionString = try String(contentsOf: path, encoding: String.Encoding.utf8)

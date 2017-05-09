@@ -20,14 +20,16 @@ class ContractInfoVC: NSViewController, Presenting {
     @IBOutlet weak var sixthLabel: NSTextField!
     @IBOutlet weak var seventhLabel: NSTextField!
     @IBOutlet weak var eightLabel: NSTextField!
+    @IBOutlet weak var leftTitle: NSTextField!
+    @IBOutlet weak var rightTitle: NSTextField!
     
-    var presentedObject = Tables.clients
+    var presentedObject = Tables.clientContracts
     
     var noneSelected = true
     
     var infoValues: [String] = [] {
-        willSet {
-            reloadInfo(with: newValue)
+        didSet{
+            reloadInfo(with: infoValues)
         }
     }
     
@@ -43,12 +45,14 @@ class ContractInfoVC: NSViewController, Presenting {
             sixthLabel.stringValue = ""
             seventhLabel.stringValue = ""
             eightLabel.stringValue = ""
+            leftTitle.stringValue = ""
+            rightTitle.stringValue = ""
         } else {
             switch presentedObject {
             case .clientContracts:
-                fromImage.image = NSImage(byReferencing:NSURL(string: data[9]) as! URL)
-                toImage.image = NSImage(byReferencing:NSURL(string: data[8]) as! URL)
-                firstLabel?.stringValue = "ID: \(data[0])"
+                fromImage.downloadedFrom(link: data[9])
+                toImage.downloadedFrom(link: data[8])
+                firstLabel?.stringValue = "ID: 00000\(data[0])"
                 secondLabel?.stringValue = "$\(data[1])"
                 thirdLabel?.stringValue = data[4]
                 fourthLabel?.stringValue = data[5]
@@ -56,25 +60,23 @@ class ContractInfoVC: NSViewController, Presenting {
                 sixthLabel?.stringValue = data[6]
                 seventhLabel?.stringValue = "ID: " + data[3]
                 eightLabel?.stringValue = "ID: " + data[2]
+                leftTitle.stringValue = "Start date"
+                rightTitle.stringValue = "Finish date"
             case .issuerContracts:
-                fromImage.image = NSImage(byReferencing:NSURL(string: data[7]) as! URL)
-                toImage.image = NSImage(byReferencing:NSURL(string: data[8]) as! URL)
-                firstLabel?.stringValue = "ID: \(data[0])"
+                fromImage.downloadedFrom(link: data[7])
+                toImage.downloadedFrom(link: data[8])
+                firstLabel?.stringValue = "ID: 00000\(data[0])"
                 secondLabel?.stringValue = "\(data[4])"
                 thirdLabel?.stringValue = data[1]
-                fourthLabel?.stringValue = "\(Double(data[1])! / Double(data[9])!)"
+                fourthLabel?.stringValue = "\(round(1000*(Double(data[1])! / Double(data[9])!)) / 1000)"
                 fifthLabel?.stringValue = data[5]
                 sixthLabel?.stringValue = data[6]
                 seventhLabel?.stringValue = "ID: " + data[2]
-                eightLabel?.stringValue = "ID: " + data[3]
+                eightLabel?.stringValue = "ID: 00000" + data[3]
+                leftTitle.stringValue = "Money"
+                rightTitle.stringValue = "Amount"
             default:
                 break
-            }
-            if fromImage == nil {
-                fromImage.image = NSImage(contentsOfFile: "NSUserGuest")
-            }
-            if toImage == nil {
-                toImage.image = NSImage(contentsOfFile: "NSUserGuest")
             }
         }
     }
@@ -82,6 +84,7 @@ class ContractInfoVC: NSViewController, Presenting {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
+        presentedObject = (parent as! SplitViewController).activeTab
     }
     
 }

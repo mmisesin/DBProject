@@ -8,8 +8,10 @@
 
 import Cocoa
 
-class DescriptionEnterVC: NSViewController {
+class DescriptionEnterVC: NSViewController, DBQueries {
 
+    @IBOutlet weak var stackView: NSStackView!
+    
     @IBOutlet weak var photoField: NSTextField!
     
     @IBOutlet weak var phoneField: NSTextField!
@@ -23,18 +25,78 @@ class DescriptionEnterVC: NSViewController {
     @IBOutlet weak var stockTitle: NSTextField!
     @IBOutlet weak var stockField: NSTextField!
     
-    var dbhandler = 
+    @IBOutlet weak var dateTitle: NSTextField!
+    @IBOutlet weak var dateField: NSTextField!
+    
+    @IBOutlet weak var errorField: NSTextField!
+    
+    var dbhandler = DBEditor()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         managingSubviews()
+        errorField.sizeToFit()
         fetchData()
         // Do view setup here.
     }
     
+    override func shouldPerformSegue(withIdentifier identifier: String?, sender: Any?) -> Bool {
+        if identifier == "back"{
+            return true
+        } else {
+            let result = uniqueValidation(phoneNumber: phoneField.stringValue)
+            if result == "tuplesOK"{
+                errorField.stringValue = "Phone number is already used"
+                return false
+            }
+            if !validate(phoneNumber: phoneField.stringValue){
+                return false
+            }
+            loadData()
+            if SingleObject.shared.type == .issuer {
+                print(photoField.stringValue)
+                if photoField.stringValue == "" || phoneField.stringValue == "" || capitalizationField.stringValue == "" || stockField.stringValue == "" || dateField.stringValue == "" || descriptionField.stringValue == ""{
+                    errorField.stringValue = "Fill all the fields."
+                    return false
+                } else {
+                    if dbhandler.insert() == "fatalError"{
+                        print(dbhandler.insert())
+                        errorField.stringValue = "Error has occured."
+                        return false
+                    } else {
+                        return true
+                    }
+                }
+            } else if SingleObject.shared.type == .broker {
+                if photoField.stringValue == "" || phoneField.stringValue == "" || descriptionField.stringValue == ""{
+                    errorField.stringValue = "Fill all the fields."
+                    return false
+                } else {
+                    if dbhandler.insert() == "fatalError"{
+                        errorField.stringValue = "Error has occured."
+                        return false
+                    } else {
+                        return true
+                    }
+                }
+            } else {
+                if photoField.stringValue == "" || phoneField.stringValue == "" || capitalizationField.stringValue == ""{
+                    errorField.stringValue = "Fill all the fields."
+                    return false
+                } else {
+                    if dbhandler.insert() == "fatalError"{
+                        errorField.stringValue = "Error has occured."
+                        return false
+                    } else {
+                        return true
+                    }
+                }
+            }
+        }
+    }
+    
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
         loadData()
-        
     }
     
     private func managingSubviews(){
@@ -42,20 +104,17 @@ class DescriptionEnterVC: NSViewController {
         case .client:
             descriptionField.isHidden = true
             stockField.isHidden = true
-            capitalizationField.isHidden = false
             moneyTitle.stringValue = "Money Available"
-            descriptionField.isHidden = true
             stockTitle.isHidden = true
+            dateTitle.isHidden = true
+            dateField.isHidden = true
         case .broker:
-            descriptionField.isHidden = false
             capitalizationField.isHidden = true
             moneyTitle.isHidden = true
             stockField.isHidden = true
             stockTitle.isHidden = true
-        case .issuer:
-            descriptionField.isHidden = false
-            capitalizationField.isHidden = false
-            stockField.isHidden = false
+            dateTitle.isHidden = true
+            dateField.isHidden = true
         default: break
         }
     }
@@ -66,14 +125,16 @@ class DescriptionEnterVC: NSViewController {
         capitalizationField.stringValue = "\(SingleObject.shared.money)"
         switch SingleObject.shared.type{
         case .client:
-            descriptionField.stringValue = ""
-            stockField.stringValue = ""
+            descriptionTitle.isHidden = true
+            descriptionField.isHidden = true
+            stockField.isHidden = true
         case .broker:
             descriptionField.stringValue = SingleObject.shared.description
-            capitalizationField.stringValue = ""
-            stockField.stringValue = ""
+            capitalizationField.isHidden = true
+            stockField.isHidden = true
         case .issuer:
             descriptionField.stringValue = SingleObject.shared.description
+            dateField.stringValue = SingleObject.shared.creationDate
             stockField.stringValue = "\(SingleObject.shared.stockPrice)"
         default: break
         }
@@ -83,9 +144,20 @@ class DescriptionEnterVC: NSViewController {
         SingleObject.shared.photo = photoField.stringValue
         SingleObject.shared.phoneNumber = phoneField.stringValue
         SingleObject.shared.description = descriptionField.stringValue
-        if let money = Double(capitalizationField.stringValue), let stockPrice = Double(stockField.stringValue){
+        SingleObject.shared.creationDate = dateField.stringValue
+        if let money = Double(capitalizationField.stringValue){
             SingleObject.shared.money = money
+        }
+        if let stockPrice = Double(stockField.stringValue){
             SingleObject.shared.stockPrice = stockPrice
         }
     }
+    
+    private func validate(phoneNumber: String) -> Bool {
+        let charcterSet  = NSCharacterSet(charactersIn: "+0123456789").inverted
+        let inputString = phoneNumber.components(separatedBy: charcterSet)
+        let filtered = inputString.joined(separator: "")
+        return  phoneNumber == filtered
+    }
+
 }
